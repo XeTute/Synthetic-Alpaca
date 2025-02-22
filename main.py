@@ -46,7 +46,58 @@ def extract_list(response_text):
     return inputs
 
 def main():
-    # Get and validate user input
+    # Ask for completions endpoint and API key
+    completions_endpoint = input("Enter the OpenAI-Compatible completions endpoint link (or /v1/chat/completions/-compatible): ").strip()
+    api_key = input("Enter your API key: ").strip()
+    
+    # Set up headers with API key
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    # Derive models endpoint if possible
+    if "chat/completions" in completions_endpoint:
+        base = completions_endpoint.split("chat/completions")[0]
+        models_endpoint = base + "models"
+    else:
+        models_endpoint = input("Enter the models endpoint link: ").strip()
+    
+    # Fetch available models
+    try:
+        models_response = requests.get(models_endpoint, headers=headers).json()
+        # Try to get a list from "data" or assume the whole response is a list
+        models_list = models_response.get("data", models_response)
+        if not isinstance(models_list, list):
+            raise ValueError("Models response is not a list")
+    except Exception as e:
+        logging.error(f"Error fetching models: {e}")
+        sys.exit(1)
+    
+    if not models_list:
+        logging.error("No models available.")
+        sys.exit(1)
+    elif len(models_list) == 1:
+        selected_model = models_list[0]["id"] if isinstance(models_list[0], dict) and "id" in models_list[0] else models_list[0]
+        logging.info(f"Only one model available. Auto-selected: {selected_model}")
+    else:
+        logging.info("--- Select a Model ---")
+        for i, model in enumerate(models_list, start=1):
+            model_id = model["id"] if isinstance(model, dict) and "id" in model else model
+            logging.info(f"{i}. {model_id}")
+        while True:
+            try:
+                choice = int(input("Enter modelID (number): ").strip())
+                if 1 <= choice <= len(models_list):
+                    selected_model = models_list[choice-1]["id"] if isinstance(models_list[choice-1], dict) and "id" in models_list[choice-1] else models_list[choice-1]
+                    break
+                else:
+                    logging.error("Invalid selection. Try again.")
+            except ValueError:
+                logging.error("Invalid input. Enter a number.")
+        logging.info(f"Selected model: {selected_model}")
+    
+    # Ask for other parameters
     try:
         n = int(input("How many samples do you need? "))
         if n <= 0:
@@ -68,9 +119,22 @@ def main():
         logging.error("Invalid input for context length.")
         sys.exit(1)
 
-    # API configuration
-    url = "https://ai.xetute.com/v1/chat/completions/"
-    headers = {"Content-Type": "application/json"}
+    # Define the generate function to wrap API requests.
+    def generate(user_input, system_message=""):
+        payload = {
+            "max_completion_tokens": context_length,
+            "model": selected_model,
+            "messages": []
+        }
+        if system_message:
+            payload["messages"].append({"role": "system", "content": system_message})
+        payload["messages"].append({"role": "user", "content": user_input})
+        try:
+            response = requests.post(completions_endpoint, json=payload, headers=headers).json()
+            return response["choices"][0]["message"]["content"]
+        except Exception as e:
+            logging.error("Error in generate: " + str(e))
+            return ""
 
     all_inputs = []
     chunk_index = 0
@@ -94,15 +158,7 @@ def main():
         # Retry indefinitely until we can successfully parse the returned list.
         while True:
             try:
-                response = requests.post(url, json={
-                    "max_completion_tokens": context_length,
-                    "messages": [{"role": "user", "content": input_prompt}]
-                }, headers=headers).json()
-                if "error" in response:
-                    logging.error(f"API Error: {response['error']['message']}")
-                    time.sleep(1)
-                    continue
-                inputs_text = response['choices'][0]['message']['content']
+                inputs_text = generate(input_prompt)
                 current_inputs = extract_list(inputs_text)
                 break  # Successfully parsed the inputs; exit retry loop.
             except Exception as e:
@@ -131,18 +187,11 @@ def main():
     logging.info("Starting generation of input-output pairs...")
     for i, inp in enumerate(unique_inputs, start=1):
         while True:
-            try:
-                q_response = requests.post(url, json={
-                    "max_completion_tokens": context_length,
-                    "messages": [
-                        {"role": "system", "content": "You are a helpful AI Assistant."},
-                        {"role": "user", "content": inp}
-                    ]
-                }, headers=headers).json()
-                output = q_response['choices'][0]['message']['content']
+            output = generate(inp, system_message="You are a helpful AI Assistant.")
+            if output:
                 break
-            except Exception as e:
-                logging.error(f"Error processing input: {inp} - {e}. Retrying...")
+            else:
+                logging.error(f"Error processing input: {inp}. Retrying...")
                 time.sleep(1)
 
         dataset.append({
