@@ -22,9 +22,11 @@ How many k context length does your endpoint support? 7
 ```
 And that should do the work. If one request fails, the script will automatically retry till it gets a valid response from the server.  
 
+---
+
 <footer style="margin-top: 3rem; text-align: center; color: #ff5500; max-height: fit-content;">
-  <p style="font-size: 1.2rem; text-shadow: 0 0 8px #ff5500;">
+  <em style="font-size: 1.2rem; text-shadow: 0 0 8px #ff5500;">
     Long live the Islamic Republic of Pakistan; Glory to the Islamic Republic of Pakistan 🇵🇰
-  </p>
+  </em>
   <img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flag_of_Pakistan.svg" alt="Pakistan Flag" style="margin-top: 1rem; border: 2px solid #00ffff; padding: 3px;">
 </footer>
