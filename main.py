@@ -7,7 +7,7 @@ import sys
 import logging
 import time
 
-# Set up fancy logging
+# Set up fancy logging (used for non-progress bar messages)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -44,6 +44,30 @@ def extract_list(response_text):
     if len(inputs) == 1 and isinstance(inputs[0], str) and "\n" in inputs[0]:
         inputs = [inp.strip() for inp in inputs[0].split('\n') if inp.strip()]
     return inputs
+
+def print_progress_bar(progress, total, start_time, bar_length=40):
+    """
+    Prints a dynamic progress bar to the console.
+    Displays:
+    - current progress (e.g., "3/10")
+    - a visual bar filled based on percentage completion
+    - percentage completed
+    - elapsed time and estimated time remaining
+    """
+    elapsed = time.time() - start_time
+    percent = progress / total
+    filled_length = int(round(bar_length * percent))
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+    # Calculate estimated remaining time
+    if progress > 0:
+        estimated_total_time = elapsed / progress * total
+        time_remaining = estimated_total_time - elapsed
+    else:
+        time_remaining = 0
+    sys.stdout.write(
+        f"\r{progress}/{total} | {bar} | {percent*100:6.2f}% | {elapsed:6.1f}s elapsed, {time_remaining:6.1f}s remaining"
+    )
+    sys.stdout.flush()
 
 def main():
     # Ask for completions endpoint and API key
@@ -138,8 +162,9 @@ def main():
 
     all_inputs = []
     chunk_index = 0
-
-    # Keep requesting chunks until we have at least n unique inputs.
+    input_start_time = time.time()
+    print("Generating inputs:")
+    # Generate unique inputs with a progress bar
     while True:
         unique_inputs = list(dict.fromkeys(all_inputs))
         if len(unique_inputs) >= n:
@@ -170,21 +195,21 @@ def main():
 
         all_inputs.extend(current_inputs)
         unique_inputs = list(dict.fromkeys(all_inputs))
-        logging.info(
-            f"Chunk {chunk_index} processed. Requested {chunk_size} inputs, "
-            f"received {len(current_inputs)} inputs. Unique inputs so far: {len(unique_inputs)}."
-        )
+        # Display progress bar for input generation
+        print_progress_bar(len(unique_inputs), n, input_start_time)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
 
     # Ensure exactly n unique inputs
-    unique_inputs = list(dict.fromkeys(all_inputs))
     if len(unique_inputs) > n:
         logging.info(f"Received more unique inputs than requested ({len(unique_inputs)} instead of {n}). Using first {n} inputs.")
         unique_inputs = unique_inputs[:n]
 
-    # Generate Q&A pairs (input-output pairs) using each input, with progress logging
+    # Generate Q&A pairs (input-output pairs) using each input, with progress bar
     dataset = []
     total = len(unique_inputs)
     logging.info("Starting generation of input-output pairs...")
+    qa_start_time = time.time()
     for i, inp in enumerate(unique_inputs, start=1):
         while True:
             output = generate(inp, system_message="You are a helpful AI Assistant.")
@@ -199,8 +224,9 @@ def main():
             "input": inp,
             "output": output
         })
-        progress = (i / total) * 100
-        logging.info(f"Processed sample {i}/{total} ({progress:.2f}%)")
+        print_progress_bar(i, total, qa_start_time)
+    sys.stdout.write("\n")
+    sys.stdout.flush()
 
     # Save the resulting dataset to data.json
     if dataset:
