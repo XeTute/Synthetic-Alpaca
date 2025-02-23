@@ -18,6 +18,7 @@ Enter your API key: 0
 Only one model available. Auto-selected: koboldcpp/EN_ZH-7B-iQ4
 How many samples do you need? 1024
 Enter topics (examples: Questions about STEM, Greetings(\"Hi\", \"Sup\"), et cetera): Questions about the Islamic Republic of Pakistan, STEM questions, advanced maths problem questions, Islam
+Enter system prompt (leave empty for none): You are a helpful AI assistant.
 How many k context length does your endpoint support? 7
 ```
 And that should do the work. If one request fails, the script will automatically retry till it gets a valid response from the server.  
