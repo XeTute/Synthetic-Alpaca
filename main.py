@@ -136,6 +136,9 @@ def main():
         logging.error("Topics cannot be empty.")
         sys.exit(1)
 
+    # Ask for a system prompt
+    system_prompt = input("Enter system prompt (leave empty for none): ").strip()
+
     try:
         context_length = int(input("How many k context length does your endpoint support? "))
         context_length *= 1024
@@ -212,7 +215,7 @@ def main():
     qa_start_time = time.time()
     for i, inp in enumerate(unique_inputs, start=1):
         while True:
-            output = generate(inp, system_message="You are a helpful AI Assistant.")
+            output = generate(inp, system_message=system_prompt)
             if output:
                 break
             else:
@@ -220,7 +223,7 @@ def main():
                 time.sleep(1)
 
         dataset.append({
-            "instruction": "You are a helpful AI Assistant.",
+            "instruction": system_prompt,  # Saved system prompt (empty if none provided)
             "input": inp,
             "output": output
         })
