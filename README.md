@@ -7,7 +7,7 @@ If you also published one generated with this script and want it to appear here,
 
 ## ⏩ Quickstart
 First, download the `main.py` file from this repo. If you don't trust it, please just read the code, it's nothing too complex.  
-To quickly get up and running execute one of following command depending on your OS:
+To quickly get up and running execute one of following command depending on your OS:  
 Microsoft Windows:
 ```cmd
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/XeTute/Synthetic-Data-Generation/refs/heads/main/main.py" -OutFile "./main.py"
