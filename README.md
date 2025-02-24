@@ -7,14 +7,20 @@ If you also published one generated with this script and want it to appear here,
 ## ⏩ Quickstart
 This is a subborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. It currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 First, download the `main.py` file from this repo. If you don't trust it, please just read the code, it's nothing too complex.  
-We also need to install one dependency which may not be pre-installed, the others are most likely shipped with Python:  
+To quickly get up and running execute one of following command depending on your OS:
+Microsoft Windows:
 ```cmd
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/XeTute/Synthetic-Data-Generation/refs/heads/main/main.py" -OutFile "./main.py"
 pip install requests
-```
-After completing all steps above, simply go to the directory where you stored the `main.py` file, and execute it:
-```cmd
 python main.py
 ```
+or, on Linux:
+```cmd
+wget "https://raw.githubusercontent.com/XeTute/Synthetic-Data-Generation/refs/heads/main/main.py"
+pip install requests
+python main.py
+```
+
 And that's it! Here's an example usage:
 ```cmd
 Enter the OpenAI-Compatible completions endpoint link (or /v1/chat/completions/-compatible): https://ai.xetute.com/v1/chat/completions
