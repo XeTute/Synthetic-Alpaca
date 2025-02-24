@@ -1,7 +1,7 @@
 # Synthetic-Data-Generation
 A subborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
-Example datasets generated using this repo: 
-[XeTute/Islam](https://huggingface.co/datasets/XeTute/Islam) | [XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer)  
+Example datasets generated using this repo:  
+[XeTute/Islam](https://huggingface.co/datasets/XeTute/Islam) | [XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer) | [XeTute/Tiny-Eastern-Alpaca](https://huggingface.co/datasets/XeTute/Tiny-Eastern-Alpaca)  
 If you also published one generated with this script and want it to appear here, just open an issue ;)
 
 ## Getting started
