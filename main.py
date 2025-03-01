@@ -7,6 +7,14 @@ import sys
 import logging
 import time
 
+MAX_LOG_LENGTH = 200  # Maximum number of characters to display in logs
+
+def truncate(text, limit=MAX_LOG_LENGTH):
+    """
+    Truncate text to the given limit, appending '...' if it exceeds the limit.
+    """
+    return text if len(text) <= limit else text[:limit] + "..."
+
 # Set up fancy logging (used for non-progress bar messages)
 logging.basicConfig(
     level=logging.INFO,
@@ -65,7 +73,8 @@ def print_progress_bar(progress, total, start_time, bar_length=40):
     else:
         time_remaining = 0
     sys.stdout.write(
-        f"\r{progress}/{total} | {bar} | {percent*100:6.2f}% | {elapsed:6.1f}s elapsed, {time_remaining:6.1f}s remaining"
+        f"\r{progress}/{total} | {bar} | {percent*100:6.2f}% | "
+        f"{elapsed:6.1f}s elapsed, {time_remaining:6.1f}s remaining"
     )
     sys.stdout.flush()
 
@@ -113,7 +122,11 @@ def main():
             try:
                 choice = int(input("Enter modelID (number): ").strip())
                 if 1 <= choice <= len(models_list):
-                    selected_model = models_list[choice-1]["id"] if isinstance(models_list[choice-1], dict) and "id" in models_list[choice-1] else models_list[choice-1]
+                    selected_model = (
+                        models_list[choice-1]["id"]
+                        if isinstance(models_list[choice-1], dict) and "id" in models_list[choice-1]
+                        else models_list[choice-1]
+                    )
                     break
                 else:
                     logging.error("Invalid selection. Try again.")
@@ -131,7 +144,7 @@ def main():
         logging.error("Invalid input for number of samples.")
         sys.exit(1)
 
-    topics = input("Enter topics (examples: Questions about STEM, Greetings(\"Hi\", \"Sup\"), et cetera): ").strip()
+    topics = input("Enter topics (examples: Questions about STEM, Greetings(\"Hi\", \"Sup\"), etc.): ").strip()
     if not topics:
         logging.error("Topics cannot be empty.")
         sys.exit(1)
@@ -166,7 +179,8 @@ def main():
     all_inputs = []
     chunk_index = 0
     input_start_time = time.time()
-    print("Generating inputs:")
+
+    logging.info("Starting to generate unique inputs...")
     # Generate unique inputs with a progress bar
     while True:
         unique_inputs = list(dict.fromkeys(all_inputs))
@@ -178,21 +192,25 @@ def main():
         # Request either 8 inputs per chunk or only the number still needed.
         chunk_size = 8 if missing >= 8 else missing
 
+        logging.info(f"Requesting chunk {chunk_index} with {chunk_size} new inputs about: {topics}")
         input_prompt = (
             f"Generate exactly {chunk_size} unique inputs about {topics}. \n"
             f"Return ONLY a list formatted like: [\"input1\", \"input2\", ...]"
         )
 
-        # Retry indefinitely until we can successfully parse the returned list.
+        # Retry until we can successfully parse the returned list.
         while True:
             try:
                 inputs_text = generate(input_prompt)
                 current_inputs = extract_list(inputs_text)
-                break  # Successfully parsed the inputs; exit retry loop.
+                logging.info(f"Chunk {chunk_index} returned {len(current_inputs)} inputs:")
+                for ci in current_inputs:
+                    logging.info(f"  - {truncate(ci)}")
+                break
             except Exception as e:
-                logging.error(f"Parsing failed: {e}")
+                logging.error(f"Parsing failed for chunk {chunk_index}: {e}")
                 logging.info("Raw response content:")
-                logging.info(inputs_text if 'inputs_text' in locals() else "No response received.")
+                logging.info(truncate(inputs_text) if 'inputs_text' in locals() else "No response received.")
                 logging.info("Retrying this chunk...")
                 time.sleep(1)
 
@@ -200,8 +218,8 @@ def main():
         unique_inputs = list(dict.fromkeys(all_inputs))
         # Display progress bar for input generation
         print_progress_bar(len(unique_inputs), n, input_start_time)
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
     # Ensure exactly n unique inputs
     if len(unique_inputs) > n:
@@ -213,23 +231,26 @@ def main():
     total = len(unique_inputs)
     logging.info("Starting generation of input-output pairs...")
     qa_start_time = time.time()
+
     for i, inp in enumerate(unique_inputs, start=1):
+        logging.info(f"Generating output for input {i}/{total}: \"{truncate(inp)}\"")
         while True:
             output = generate(inp, system_message=system_prompt)
             if output:
+                logging.info(f"Output for input {i}:\n{truncate(output)}")
                 break
             else:
-                logging.error(f"Error processing input: {inp}. Retrying...")
+                logging.error(f"Error processing input: {truncate(inp)}. Retrying...")
                 time.sleep(1)
 
         dataset.append({
-            "instruction": system_prompt,  # Saved system prompt (empty if none provided)
+            "instruction": system_prompt,  # store the system prompt if needed
             "input": inp,
             "output": output
         })
         print_progress_bar(i, total, qa_start_time)
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
     # Save the resulting dataset to data.json
     if dataset:
