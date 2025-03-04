@@ -3,7 +3,7 @@ A stubborn & lightweight (for Python at least) one-file pipeline for synthetic d
 ![Demo image](https://github.com/user-attachments/assets/34a29127-00ad-4e9c-9298-16200a990eeb)
 Example datasets generated using this repo:  
 [XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer) |  [XeTute/BigMathematics-Reasoning](https://huggingface.co/datasets/XeTute/BigMathematics-Reasoning)  
-If you also published one generated with this script and want it to appear here, just open an issue ;)
+If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
 ## ⏩ Quickstart
 First, download the `main.py` file from this repo. If you don't trust it, please just read the code, it's nothing too complex.  
