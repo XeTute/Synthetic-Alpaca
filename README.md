@@ -2,7 +2,7 @@
 A stubborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 ![Demo image](https://github.com/user-attachments/assets/34a29127-00ad-4e9c-9298-16200a990eeb)
 Example datasets generated using this repo:  
-[XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer) |  [XeTute/BigMathematics-Reasoning](https://huggingface.co/datasets/XeTute/BigMathematics-Reasoning)  
+[XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer) | [XeTute/BigMathematics-Reasoning](https://huggingface.co/datasets/XeTute/BigMathematics-Reasoning) | [XeTute/TinyDistillV1-STEM-R1-2k](https://huggingface.co/datasets/XeTute/TinyDistillV1-STEM-R1-2k) | [XeTute/TinyDistillV2-STEM-R1-2k](https://huggingface.co/datasets/XeTute/TinyDistillV2-STEM-R1-2k)
 If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
 ## ⏩ Quickstart
