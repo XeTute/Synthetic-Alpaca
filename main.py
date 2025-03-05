@@ -144,7 +144,7 @@ def main():
         logging.error("Invalid input for number of samples.")
         sys.exit(1)
 
-    topics = input("Enter topics (examples: Questions about STEM, Greetings(\"Hi\", \"Sup\"), etc.): ").strip()
+    topics = input("Enter topics (example: \"Versatile questions about Pakistan\", etc.): ").strip()
     if not topics:
         logging.error("Topics cannot be empty.")
         sys.exit(1)
@@ -195,7 +195,7 @@ def main():
         logging.info(f"Requesting chunk {chunk_index} with {chunk_size} new inputs about: {topics}")
         input_prompt = (
             f"Generate exactly {chunk_size} unique inputs about {topics}. \n"
-            f"Return ONLY a list formatted like: [\"input1\", \"input2\", ...]"
+            f"Return ONLY a (Python) list including these inputs, strictly formatted like: [\"input1\", \"input2\", ...]"
         )
 
         # Retry until we can successfully parse the returned list.
