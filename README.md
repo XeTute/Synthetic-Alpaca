@@ -2,7 +2,7 @@
 A stubborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 
 ---
-![Demo image](https://github.com/user-attachments/assets/34a29127-00ad-4e9c-9298-16200a990eeb)  
+![image](https://github.com/user-attachments/assets/9f42b1ed-9000-4538-aba0-7d89645d5050)
 ---
 
 Example datasets generated using this repo:  
