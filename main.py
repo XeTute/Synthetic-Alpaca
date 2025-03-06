@@ -159,7 +159,7 @@ def main():
         logging.error("Invalid input for context length.")
         sys.exit(1)
 
-    outputpath = str(input("Where should the .JSON file be saved at? (only filename; will append \".jsonl\" to the ending): ")) + str(".jsonl");
+    outputpath = str(input("Where should the .json file be saved at? (only filename; will append \".json\" to the ending): ")) + str(".json");
 
     # Define the generate function to wrap API requests.
     def generate(user_input, system_message=""):
