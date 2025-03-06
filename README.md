@@ -31,7 +31,7 @@ Enter the OpenAI-Compatible completions endpoint link (or /v1/chat/completions/-
 Enter your API key: 0
 Only one model available. Auto-selected: koboldcpp/EN_ZH-7B-iQ4
 How many samples do you need? 1024
-Enter topics (examples: Questions about STEM, Greetings(\"Hi\", \"Sup\"), et cetera): Questions about the Islamic Republic of Pakistan, STEM questions, advanced maths problem questions, Islam
+Enter topics (example: "Versatile questions about Pakistan", etc.): Questions about the Islamic Republic of Pakistan, STEM and Islam
 Enter system prompt (leave empty for none): You are a helpful AI assistant.
 How many k context length does your endpoint support? 7
 ```
