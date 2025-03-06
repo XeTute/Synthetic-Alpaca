@@ -144,20 +144,22 @@ def main():
         logging.error("Invalid input for number of samples.")
         sys.exit(1)
 
-    topics = input("Enter topics (example: \"Versatile questions about Pakistan\", etc.): ").strip()
+    topics = input("Enter topics (example: \"Versatile questions about Pakistan\", et cetera. Can be both sparse & highly detailed):\n").strip()
     if not topics:
         logging.error("Topics cannot be empty.")
         sys.exit(1)
 
     # Ask for a system prompt
-    system_prompt = input("Enter system prompt (leave empty for none): ").strip()
+    system_prompt = input("Enter system prompt (leave empty for none):\n").strip()
 
     try:
-        context_length = int(input("How many k context length does your endpoint support? "))
+        context_length = int(input("How many k (= *1024) context length does your endpoint support? "))
         context_length *= 1024
     except ValueError:
         logging.error("Invalid input for context length.")
         sys.exit(1)
+
+    outputpath = str(input("Where should the .JSON file be saved at? (only filename; will append \".jsonl\" to the ending): ")) + str(".jsonl");
 
     # Define the generate function to wrap API requests.
     def generate(user_input, system_message=""):
@@ -252,12 +254,12 @@ def main():
         sys.stdout.write("\n")
         sys.stdout.flush()
 
-    # Save the resulting dataset to data.json
+    # Save the resulting dataset to outputpath
     if dataset:
         try:
-            with open('data.json', 'w') as f:
+            with open(outputpath, 'w') as f:
                 json.dump(dataset, f, indent=2)
-            logging.info(f"Successfully generated {len(dataset)} samples in data.json")
+            logging.info(f"Successfully generated {len(dataset)} samples in {outputpath}.")
         except Exception as e:
             logging.error(f"Error saving file: {e}")
     else:
