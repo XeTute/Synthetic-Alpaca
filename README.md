@@ -5,8 +5,10 @@ A stubborn & lightweight (for Python at least) one-file pipeline for synthetic d
 ![image](https://github.com/user-attachments/assets/9f42b1ed-9000-4538-aba0-7d89645d5050)
 ---
 
-Example datasets generated using this repo:  
-[XeTute/Pakistani-Developer](https://huggingface.co/datasets/XeTute/Pakistani-Developer) | [XeTute/BigMathematics-Reasoning](https://huggingface.co/datasets/XeTute/BigMathematics-Reasoning) | [XeTute/TinyDistillV1-STEM-R1-2k](https://huggingface.co/datasets/XeTute/TinyDistillV1-STEM-R1-2k) | [XeTute/TinyDistillV2-STEM-R1-2k](https://huggingface.co/datasets/XeTute/TinyDistillV2-STEM-R1-2k)  
+Example datasets generated using this repo:
+
+- [XeTute/Eastern-Alpaca-14k](https://huggingface.co/datasets/XeTute/Eastern-Alpaca-14k): 14 * 1024 instruction, input & output rows
+
 If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
 ## ⏩ Quickstart
