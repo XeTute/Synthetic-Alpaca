@@ -39,6 +39,16 @@ How many k context length does your endpoint support? 7
 ```
 And that should do the work. If one request fails, the script will automatically retry till it gets a valid response from the server.  
 
+## Star History
+
+<a href="https://www.star-history.com/#XeTute/Synthetic-Data-Generation&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date" />
+ </picture>
+</a>
+
 ---
 
 <footer style="margin-top: 3rem; text-align: center; color: #ff5500; max-height: fit-content;">
