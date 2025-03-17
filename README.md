@@ -8,6 +8,7 @@ A stubborn & lightweight (for Python at least) one-file pipeline for synthetic d
 Example datasets generated using this repo:
 
 - [XeTute/Eastern-Alpaca-14k](https://huggingface.co/datasets/XeTute/Eastern-Alpaca-14k): 14 * 1024 instruction, input & output rows
+- [XeTute/Medic-Thoughts-16k](https://huggingface.co/datasets/XeTute/Medic-Thoughts-16k): 16 * 1024 instruction, input & output rows
 
 If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
