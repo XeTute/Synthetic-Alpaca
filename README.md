@@ -30,13 +30,19 @@ python main.py
 
 And that's it! Here's an example usage:
 ```cmd
-Enter the OpenAI-Compatible completions endpoint link (or /v1/chat/completions/-compatible): https://ai.xetute.com/v1/chat/completions
-Enter your API key: 0
-Only one model available. Auto-selected: koboldcpp/EN_ZH-7B-iQ4
-How many samples do you need? 1024
-Enter topics (example: "Versatile questions about Pakistan", etc.): Questions about the Islamic Republic of Pakistan, STEM and Islam
-Enter system prompt (leave empty for none): You are a helpful AI assistant.
-How many k context length does your endpoint support? 7
+Enter chat/completions URL: https://ai.xetute.com/v1/chat/completions
+Enter API-key for endpoint: 0
+Enter model to use: 0
+Enter n samples: 1024
+Enter max tokens per 8 question: 4096
+Enter max tokens per output: 1024
+Enter topics (-END- if done; include examples if possible):
+Fun facts about Cats in Pakistan
+-END-
+Enter system prompt (-END- if none):
+You are a helpful, accurate & playful assistant.    
+-END-
+Filename (will append .json): data
 ```
 And that should do the work. If one request fails, the script will automatically retry till it gets a valid response from the server.  
 
