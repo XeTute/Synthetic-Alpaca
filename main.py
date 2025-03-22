@@ -3,7 +3,7 @@ import json
 import re
 import ast
 
-chunksize = 8
+chunksize = 4
 
 def extract_list(response_text):
     cleaned_text = re.sub(r'```(?:python|json)?', '', response_text).strip()
@@ -65,7 +65,7 @@ def getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput
             msg.append({ "role": "system", "content": systemprompt } )
         msg.append({ "role": "user", "content": prompt })
 
-        inputs = extract_list(generate(endpoint, model, apikey, msg, 1.3, maxinput))
+        inputs = extract_list(generate(endpoint, model, apikey, msg, 1, maxinput))
         if (len(inputs) == chunksize):
             return inputs
         else:
@@ -105,7 +105,7 @@ def main():
         unique_new = [item for item in new_batch if item not in inputs]
         unique_new = unique_new[:needed]
         inputs.extend(unique_new)
-        print(f"Collected {len(inputs)}/{samples} inputs...")
+        print(f"\rCollected {len(inputs)}/{samples} inputs...", end="")
     print("Got inputs.")
 
     print("Getting \"output\" column...")
