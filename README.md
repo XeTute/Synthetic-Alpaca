@@ -2,7 +2,7 @@
 A stubborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 
 ---
-![image](https://github.com/user-attachments/assets/dd75c67f-e5fc-4f89-bbbc-58750794b1cd)
+[![image](https://github.com/user-attachments/assets/dd75c67f-e5fc-4f89-bbbc-58750794b1cd)](https://huggingface.co/datasets/XeTute/Eastern-Alpaca-14k)
 ---
 
 Example datasets generated using this repo:
