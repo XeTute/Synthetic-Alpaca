@@ -2,15 +2,12 @@
 A stubborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 
 ---
-[![image](https://github.com/user-attachments/assets/dd75c67f-e5fc-4f89-bbbc-58750794b1cd)](https://huggingface.co/datasets/XeTute/Eastern-Alpaca-14k)
+[![image](https://github.com/user-attachments/assets/dd75c67f-e5fc-4f89-bbbc-58750794b1cd)](https://huggingface.co/datasets/Hamzah-Asadullah/TA-4k)
 ---
 
 Example datasets generated using this repo:
 
-- [XeTute/Eastern-Alpaca-14k](https://huggingface.co/datasets/XeTute/Eastern-Alpaca-14k): 14 * 1024 instruction, input & output rows
-- [XeTute/Medic-Thoughts-16k](https://huggingface.co/datasets/XeTute/Medic-Thoughts-16k): 16 * 1024 instruction, input & output rows
-- [XeTute/PA-4k](https://huggingface.co/datasets/XeTute/PA-4k): 4 * 1024 input & output rows
-- [XeTute/MyRPGPT](https://huggingface.co/datasets/XeTute/MyRPGPT): 4 * 1024 instructions, input & output rows
+- [Hamzah-Asadullah/TA-4k](https://huggingface.co/datasets/Hamzah-Asadullah/TA-4k): TA (short for Tiny-Alpaca) 4k is a dataset with 4,096 rows, each with three columns, for instruction-tuning
 
 If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
