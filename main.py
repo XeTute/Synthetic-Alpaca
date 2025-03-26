@@ -50,7 +50,7 @@ def lineinput(prompt):
 
     print(prompt)
     while True:
-        buffer = str(input())
+        buffer = str(input(">_ "))
         if (buffer == "-END-"):
             break
         else:
