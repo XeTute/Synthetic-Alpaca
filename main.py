@@ -102,7 +102,7 @@ def main():
         unique_new = [item for item in new_batch if item not in inputs]
         unique_new = unique_new[:needed]
         inputs.extend(unique_new)
-        print(f"\rCollected {len(inputs)}/{samples} inputs.", end="")
+        print(f"\r>> Collected {len(inputs)}/{samples} inputs.", end="")
     
     if (len(inputs) > samples):
         inputs = inputs[:samples]
@@ -111,7 +111,7 @@ def main():
 
     print(">> Collecting \"output\" column...")
     for x in range(samples):
-        print(f"Input: {inline(maxlength(inputs[x], 80))}")
+        print(f">> Input: {inline(maxlength(inputs[x], 80))}")
         msg = []
         if (len(systemprompt) > 0):
             msg.append({ "role": "system", "content": systemprompt })
@@ -119,7 +119,7 @@ def main():
 
         outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput))
         data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
-        print(f"Output: {inline(maxlength(outputs[x], 80))}\n--- Added sample {x} / {samples} to list.")
+        print(f">> Output: {inline(maxlength(outputs[x], 80))}\n--- Added sample {x} / {samples} to list.")
     print(">> Collected outputs.")
 
     saveat = saveat + ".json"
