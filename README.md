@@ -1,4 +1,4 @@
-# Synthetic-Data-Generation
+# Synthetic-Alpaca
 A stubborn & lightweight (for Python at least) one-file pipeline for synthetic data generation. Currently only supports the Alpaca format, but there are plans to roll out versions for other (often-used) JSON formats.  
 
 ---
