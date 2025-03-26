@@ -16,13 +16,13 @@ First, download the `main.py` file from this repo. If you don't trust it, please
 To quickly get up and running execute one of following command depending on your OS:  
 Microsoft Windows:
 ```cmd
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/XeTute/Synthetic-Data-Generation/refs/heads/main/main.py" -OutFile "./main.py"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/XeTute/Synthetic-Alpaca/refs/heads/main/main.py" -OutFile "./main.py"
 pip install requests
 python main.py
 ```
 or, on Linux:
 ```cmd
-wget "https://raw.githubusercontent.com/XeTute/Synthetic-Data-Generation/refs/heads/main/main.py"
+wget "https://raw.githubusercontent.com/XeTute/Synthetic-Alpaca/refs/heads/main/main.py"
 pip install requests
 python main.py
 ```
@@ -49,9 +49,9 @@ And that should do the work. If one request fails, the script will automatically
 
 <a href="https://www.star-history.com/#XeTute/Synthetic-Data-Generation&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=XeTute/Synthetic-Data-Generation&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Alpaca&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=XeTute/Synthetic-Alpaca&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=XeTute/Synthetic-Alpaca&type=Date" />
  </picture>
 </a>
 
