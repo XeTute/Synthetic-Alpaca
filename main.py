@@ -3,7 +3,7 @@ import json
 import re
 import ast
 
-chunksize = 4
+chunksize = 8
 
 def extract_list(response_text):
     cleaned_text = re.sub(r'```(?:python|json)?', '', response_text).strip()
@@ -41,7 +41,7 @@ def generate(endpoint, model, key, msg, temperature, maxlength):
         response = requests.post(endpoint, json=payload, headers=headers).json()
         return response["choices"][0]["message"]["content"]
     except:
-        print("Failed getting any response from endpoint; re-trying...")
+        print("\r>> Failed getting any response from endpoint; re-trying...", end="")
         return generate(endpoint, model, key, msg, temperature, maxlength)
 
 def lineinput(prompt):
@@ -66,12 +66,9 @@ def getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput
         msg.append({ "role": "user", "content": prompt })
 
         inputs = extract_list(generate(endpoint, model, apikey, msg, 1, maxinput))
-        if (len(inputs) == chunksize):
-            return inputs
-        else:
-            raise Exception(f"Expected {chunksize} inputs, got {len(inputs)}.")
+        return inputs
     except:
-        print("Failed to get inputs, re-trying...")
+        print("\r>> Failed to get inputs, re-trying...")
         return getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput)
 
 def inline(string):
@@ -83,20 +80,20 @@ def maxlength(string, max):
     return string
 
 def main():
-    endpoint = str(input("Enter chat/completions URL: "))
-    apikey = str(input("Enter API-key for endpoint: "))
-    model = str(input("Enter model to use: "))
-    samples = int(input("Enter n samples: "))
-    maxinput = int(input(f"Enter max tokens per {chunksize} question: "))
-    maxoutput = int(input("Enter max tokens per output: "))
-    topics = lineinput("Enter topics (-END- if done; include examples if possible):")
-    systemprompt = lineinput("Enter system prompt (-END- if none):")
-    saveat = str(input("Filename (will append .json): "))
+    endpoint = str(input(">_ Enter chat/completions URL: "))
+    apikey = str(input(">_ Enter API-key for endpoint: "))
+    model = str(input(">_ Enter model to use: "))
+    samples = int(input(">_ Enter n samples: "))
+    maxinput = int(input(f">_ Enter max tokens per {chunksize} question: "))
+    maxoutput = int(input(">_ Enter max tokens per output: "))
+    topics = lineinput(">_ Enter topics (-END- if done; include examples if possible):")
+    systemprompt = lineinput(">_ Enter system prompt (-END- if none):")
+    saveat = str(input(">_ Filename (will append .json): "))
 
     data = []
     inputs = []
     outputs = []
-    print("Getting \"input\" column...")
+    print(">> Collecting \"input\" column...")
     while len(inputs) < samples:
         needed = samples - len(inputs)
         current_chunk = min(chunksize, needed)
@@ -105,10 +102,14 @@ def main():
         unique_new = [item for item in new_batch if item not in inputs]
         unique_new = unique_new[:needed]
         inputs.extend(unique_new)
-        print(f"\rCollected {len(inputs)}/{samples} inputs...", end="")
-    print("Got inputs.")
+        print(f"\rCollected {len(inputs)}/{samples} inputs.", end="")
+    
+    if (len(inputs) > samples):
+        inputs = inputs[:samples]
+        print(f"\n>> Note: Got {len(inputs)} samples, removed {len(inputs) - samples} samples.", end="")
+    print("\n>> Collected inputs.")
 
-    print("Getting \"output\" column...")
+    print(">> Collecting \"output\" column...")
     for x in range(samples):
         print(f"Input: {inline(maxlength(inputs[x], 80))}")
         msg = []
@@ -119,12 +120,12 @@ def main():
         outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput))
         data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
         print(f"Output: {inline(maxlength(outputs[x], 80))}\n--- Added sample {x} / {samples} to list.")
-    print("Got outputs.")
+    print(">> Collected outputs.")
 
     saveat = saveat + ".json"
     with open(saveat, 'w') as f:
-        json.dump(data, f, indent=2)
-    print(f"Done; saved at {saveat}")
+        json.dump(data, f, indent=1)
+    print(f">> Done; saved through {saveat}")
 
 if __name__ == '__main__':
     main()
