@@ -1,4 +1,5 @@
 import requests
+import time
 import json
 import re
 import ast
@@ -34,15 +35,35 @@ def extract_list(response_text):
 
     return inputs
 
-def generate(endpoint, model, key, msg, temperature, maxlength):
+pollseed = 0
+def generate(endpoint, model, key, msg, temperature, maxlength, recursion=True):
+    global pollseed
     payload = { "temperature": temperature, "max_completion_tokens": maxlength, "messages": msg, "model": model }
     headers = { "Content-Type": "application/json", "Authorization": f"Bearer {key}" }
+    
     try:
-        response = requests.post(endpoint, json=payload, headers=headers).json()
-        return response["choices"][0]["message"]["content"]
-    except:
-        print("\r>> Failed getting any response from endpoint; re-trying...", end="")
-        return generate(endpoint, model, key, msg, temperature, maxlength)
+        if endpoint == "https://text.pollinations.ai/openai":
+            response = requests.post(endpoint + f"?seed={pollseed}", json=payload, headers=headers)
+            response.raise_for_status()
+            pollseed += 1
+        else:
+            response = requests.post(endpoint, json=payload, headers=headers)
+            response.raise_for_status()
+        
+        return response.json()["choices"][0]["message"]["content"]
+    
+    except Exception as e:
+        print(f">> Error: {e}")
+        if not recursion:
+            return None
+        
+        print(">> Failed getting any response from endpoint; re-trying...")
+        while True:  # Fix recursion crashes
+            time.sleep(2)
+            response = generate(endpoint, model, key, msg, temperature, maxlength, False)
+            if response is not None:
+                print("\r")
+                return response
 
 def lineinput(prompt):
     val = ""
@@ -60,12 +81,12 @@ def lineinput(prompt):
 def getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput):
     try:
         msg = []
-        prompt = f"Generate {chunksize} highly diverse/versatile text-inputs and wrap them strictly into a Python list ([\"input\", ...]), each relevant to:\n{topics}"
+        prompt = f"Generate {chunksize} highly diverse/versatile text-inputs and wrap them strictly in a Python list ([\"input\", ...]), each relevant to:\n{topics}"
         if (len(systemprompt) > 0):
             msg.append({ "role": "system", "content": systemprompt } )
         msg.append({ "role": "user", "content": prompt })
 
-        inputs = extract_list(generate(endpoint, model, apikey, msg, 1, maxinput))
+        inputs = extract_list(generate(endpoint, model, apikey, msg, 1.3, maxinput, True))
         return inputs
     except:
         print("\r>> Failed to get inputs, re-trying...")
@@ -117,9 +138,9 @@ def main():
             msg.append({ "role": "system", "content": systemprompt })
         msg.append({ "role": "user", "content": inputs[x] })
 
-        outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput))
+        outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput, True))
         data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
-        print(f">> Output: {inline(maxlength(outputs[x], 80))}\n--- Added sample {x} / {samples} to list.")
+        print(f">> Output: {inline(maxlength(outputs[x], 80))}\n>> Added sample {x} / {samples} to list.")
     print(">> Collected outputs.")
 
     saveat = saveat + ".json"
