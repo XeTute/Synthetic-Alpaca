@@ -5,7 +5,7 @@ import re
 import ast
 
 chunksize = 8
-alpaca = True
+alpaca = False
 convlength = 4
 
 def extract_list(response_text):
@@ -122,32 +122,33 @@ def main():
     saveat = str(input(">_ Filename (will append .json): "))
 
     data = []
-    
+    inputs = []
+
+    print(">> Collecting inputs...")
+    while len(inputs) < samples:
+        needed = samples - len(inputs)
+        new_batch = getinputs(
+            min(chunksize, needed),
+            topics,
+            "You generate a Python list for message inputs.\nPython lists are structured like [string, ...].",
+            endpoint, model, apikey, maxoutput
+        )
+
+        unique_new = [item for item in new_batch if item not in inputs]
+        unique_new = unique_new[:needed]
+        inputs.extend(unique_new)
+        print(f"\r>> Collected {len(inputs)}/{samples} inputs.", end="")
+
+    if (len(inputs) > samples):
+        inputs = inputs[:samples]
+        print(f"\n>> Note: Got {len(inputs)} samples, removed {len(inputs) - samples} samples.", end="")
+
+    print("\n>> Collected inputs.")
+
     if alpaca:
-        inputs = []
         outputs = []
 
-        print(">> Collecting \"input\" column...")
-        while len(inputs) < samples:
-            needed = samples - len(inputs)
-            new_batch = getinputs(
-                min(chunksize, needed),
-                topics,
-                "You generate a Python list for message inputs.\nPython lists are structured like [string, ...].",
-                endpoint, model, apikey, maxoutput
-            )
-
-            unique_new = [item for item in new_batch if item not in inputs]
-            unique_new = unique_new[:needed]
-            inputs.extend(unique_new)
-            print(f"\r>> Collected {len(inputs)}/{samples} inputs.", end="")
-
-        if (len(inputs) > samples):
-            inputs = inputs[:samples]
-            print(f"\n>> Note: Got {len(inputs)} samples, removed {len(inputs) - samples} samples.", end="")
-
-        print("\n>> Collected inputs.")
-
+        print(">> Starting generation for Alpaca-format")
         print(">> Collecting \"output\" column...")
         for x in range(samples):
             print(f">> Input: {inline(maxlength(inputs[x], 80))}")
@@ -165,22 +166,19 @@ def main():
     else:   
 
         print(f">> Starting generation for ShareGPT-format")
-        while len(data) < samples:
-            
-            conversation = [ { "role": "system", "content": systemprompt + f"\nThis conversation is in relevance of following:\n{topics}" } ]
-            switch = False
+        for x in range(samples):
+            conversation = [ { "role": "system", "content": systemprompt }, { "role": "user", "content": inputs[x] } ]
 
             while len(conversation) < convlength:
-                conversation.append({ "role": "user" if switch else "assistant", "content": generate(endpoint, model, apikey, conversation, 1, maxoutput, True) })
+                conversation.append({ "role": "assistant" if (conversation[-1]["role"] == "user") else "user", "content": generate(endpoint, model, apikey, conversation, 1, maxoutput, True) })
                 conversation = inverseroles(conversation)
-                switch = False if switch else True
-                print(f"\rGenerated ")
-            
+
+            print(f"\rGenerated {x + 1}/{samples} conversations.", end="")
             data.append(conversation)
 
     saveat = saveat + ".json"
     with open(saveat, 'w') as f:
-        json.dump(data, f, indent=1)
+        json.dump(data, f, indent=2)
     print(f">> Done; saved through {saveat}")
 
 if __name__ == '__main__':
