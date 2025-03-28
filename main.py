@@ -5,6 +5,8 @@ import re
 import ast
 
 chunksize = 8
+alpaca = True
+convlength = 4
 
 def extract_list(response_text):
     cleaned_text = re.sub(r'```(?:python|json)?', '', response_text).strip()
@@ -100,48 +102,81 @@ def maxlength(string, max):
         string = string[:max - 3] + "..."
     return string
 
+def inverseroles(conversation):
+    for msg in conversation:
+        if msg["role"] == "user":
+            msg["role"] = "assistant"
+        elif msg["role"] == "assistant":
+            msg["role"] = "user"
+    return conversation
+
 def main():
+
     endpoint = str(input(">_ Enter chat/completions URL: "))
     apikey = str(input(">_ Enter API-key for endpoint: "))
     model = str(input(">_ Enter model to use: "))
     samples = int(input(">_ Enter n samples: "))
-    maxinput = int(input(f">_ Enter max tokens per {chunksize} question: "))
-    maxoutput = int(input(">_ Enter max tokens per output: "))
+    maxoutput = int(input(">_ Enter max tokens per response: "))
     topics = lineinput(">_ Enter topics (-END- if done; include examples if possible):")
     systemprompt = lineinput(">_ Enter system prompt (-END- if none):")
     saveat = str(input(">_ Filename (will append .json): "))
 
     data = []
-    inputs = []
-    outputs = []
-    print(">> Collecting \"input\" column...")
-    while len(inputs) < samples:
-        needed = samples - len(inputs)
-        current_chunk = min(chunksize, needed)
-        new_batch = getinputs(current_chunk, topics, "You generate a Python list for message inputs.", endpoint, model, apikey, maxinput)
-
-        unique_new = [item for item in new_batch if item not in inputs]
-        unique_new = unique_new[:needed]
-        inputs.extend(unique_new)
-        print(f"\r>> Collected {len(inputs)}/{samples} inputs.", end="")
     
-    if (len(inputs) > samples):
-        inputs = inputs[:samples]
-        print(f"\n>> Note: Got {len(inputs)} samples, removed {len(inputs) - samples} samples.", end="")
-    print("\n>> Collected inputs.")
+    if alpaca:
+        inputs = []
+        outputs = []
 
-    print(">> Collecting \"output\" column...")
-    for x in range(samples):
-        print(f">> Input: {inline(maxlength(inputs[x], 80))}")
-        msg = []
-        if (len(systemprompt) > 0):
-            msg.append({ "role": "system", "content": systemprompt })
-        msg.append({ "role": "user", "content": inputs[x] })
+        print(">> Collecting \"input\" column...")
+        while len(inputs) < samples:
+            needed = samples - len(inputs)
+            new_batch = getinputs(
+                min(chunksize, needed),
+                topics,
+                "You generate a Python list for message inputs.\nPython lists are structured like [string, ...].",
+                endpoint, model, apikey, maxoutput
+            )
 
-        outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput, True))
-        data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
-        print(f">> Output: {inline(maxlength(outputs[x], 80))}\n>> Added sample {x} / {samples} to list.")
-    print(">> Collected outputs.")
+            unique_new = [item for item in new_batch if item not in inputs]
+            unique_new = unique_new[:needed]
+            inputs.extend(unique_new)
+            print(f"\r>> Collected {len(inputs)}/{samples} inputs.", end="")
+
+        if (len(inputs) > samples):
+            inputs = inputs[:samples]
+            print(f"\n>> Note: Got {len(inputs)} samples, removed {len(inputs) - samples} samples.", end="")
+
+        print("\n>> Collected inputs.")
+
+        print(">> Collecting \"output\" column...")
+        for x in range(samples):
+            print(f">> Input: {inline(maxlength(inputs[x], 80))}")
+
+            msg = []
+            if (len(systemprompt) > 0):
+                msg.append({ "role": "system", "content": systemprompt })
+            msg.append({ "role": "user", "content": inputs[x] })
+
+            outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput, True))
+            data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
+            print(f">> Output: {inline(maxlength(outputs[x], 80))}\n>> Added sample {x} / {samples} to list.")
+        print(">> Collected outputs.")
+
+    else:   
+
+        print(f">> Starting generation for ShareGPT-format")
+        while len(data) < samples:
+            
+            conversation = [ { "role": "system", "content": systemprompt + f"\nThis conversation is in relevance of following:\n{topics}" } ]
+            switch = False
+
+            while len(conversation) < convlength:
+                conversation.append({ "role": "user" if switch else "assistant", "content": generate(endpoint, model, apikey, conversation, 1, maxoutput, True) })
+                conversation = inverseroles(conversation)
+                switch = False if switch else True
+                print(f"\rGenerated ")
+            
+            data.append(conversation)
 
     saveat = saveat + ".json"
     with open(saveat, 'w') as f:
