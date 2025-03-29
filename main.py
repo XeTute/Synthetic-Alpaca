@@ -176,7 +176,7 @@ def main():
                 conversation.append({ "role": "assistant" if (conversation[-1]["role"] == "user") else "user", "content": generate(endpoint, model, apikey, conversation, 1, maxoutput, True) })
                 conversation = inverseroles(conversation)
 
-            print(f"\rGenerated {x + 1}/{samples} conversations.", end="")
+            print(f"\r>> Generated {x + 1}/{samples} conversations.", end="")
             data.append(conversation)
 
     saveat = saveat + ".json"
