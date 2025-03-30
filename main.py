@@ -6,7 +6,7 @@ import ast
 
 chunksize = 2
 alpaca = False
-convlength = 16
+convlength = 64
 
 def extract_list(response_text):
     cleaned_text = re.sub(r'```(?:python|json)?', '', response_text).strip()
@@ -57,16 +57,16 @@ def generate(endpoint, model, key, msg, temperature, maxlength, recursion=True):
         return response.json()["choices"][0]["message"]["content"]
     
     except Exception as e:
-        print(f"\r>> Error: {e}")
+        print(f">> Error: {e}")
         if not recursion:
             return None
         
-        print("\r>> Failed getting any response from endpoint; re-trying...", end="")
+        print(">> Failed getting any response from endpoint; re-trying...")
         while True:  # Fix recursion crashes
             time.sleep(2)
             response = generate(endpoint, model, key, msg, temperature, maxlength, False)
             if response is not None:
-                print("\r")
+                print("\n")
                 return response
 
 def lineinput(prompt):
@@ -93,7 +93,7 @@ def getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput
         inputs = extract_list(generate(endpoint, model, apikey, msg, 1.3, maxinput, True))
         return inputs
     except:
-        print("\r>> Failed to get inputs, re-trying...", end="")
+        print("\r>> Failed to get inputs, re-trying...")
         return getinputs(chunksize, topics, systemprompt, endpoint, model, apikey, maxinput)
 
 def inline(string):
@@ -126,7 +126,7 @@ def main():
     data = []
     inputs = []
 
-    print(">> Collecting inputs...", end="")
+    print(">> Collecting inputs...")
     while len(inputs) < samples:
         needed = samples - len(inputs)
         new_batch = getinputs(
@@ -151,7 +151,6 @@ def main():
         outputs = []
 
         print(">> Starting generation for Alpaca-format")
-        print(">> Collecting \"output\" column...")
         for x in range(samples):
             print(f">> Input: {inline(maxlength(inputs[x], 80))}")
 
@@ -164,7 +163,6 @@ def main():
             data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
             print(f">> Output: {inline(maxlength(outputs[x], 80))}")
             print(f">> Added sample {x} / {samples} to list.")
-        print(">> Collected outputs.")
 
     else:   
 
