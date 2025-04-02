@@ -6,7 +6,7 @@ import ast
 
 chunksize = 2
 alpaca = False
-convlength = 64
+convlength = 12
 
 def extract_list(response_text):
     cleaned_text = re.sub(r'```(?:python|json)?', '', response_text).strip()
@@ -113,7 +113,6 @@ def inverseroles(conversation):
     return conversation
 
 def main():
-
     endpoint = str(input(">_ Enter chat/completions URL: "))
     apikey = str(input(">_ Enter API-key for endpoint: "))
     model = str(input(">_ Enter model to use: "))
@@ -121,7 +120,7 @@ def main():
     maxoutput = int(input(">_ Enter max tokens per response: "))
     topics = lineinput(">_ Enter topics (-END- if done; include examples if possible):")
     systemprompt = lineinput(">_ Enter system prompt (-END- if none):")
-    saveat = str(input(">_ Filename (will append .json): "))
+    saveat = str(input(">_ Filename (will append .json): ")) + ".json"
 
     data = []
     inputs = []
@@ -159,13 +158,16 @@ def main():
                 msg.append({ "role": "system", "content": systemprompt })
             msg.append({ "role": "user", "content": inputs[x] })
 
-            outputs.append(generate(endpoint, model, apikey, msg, 0.7, maxoutput, True))
-            data.append({ "instruction": systemprompt, "input": inputs[x], "output": outputs[x] })
-            print(f">> Output: {inline(maxlength(outputs[x], 80))}")
-            print(f">> Added sample {x} / {samples} to list.")
+            output = generate(endpoint, model, apikey, msg, 0.7, maxoutput, True)
+            outputs.append(output)
+            data.append({ "instruction": systemprompt, "input": inputs[x], "output": output })
+            print(f">> Output: {inline(maxlength(output, 80))}")
+            print(f">> Added sample {x + 1} / {samples} to list.")
 
+            # Write updated data to file after each sample
+            with open(saveat, 'w') as f:
+                json.dump(data, f, indent=2)
     else:   
-
         print(f">> Starting generation for ShareGPT-format")
         for x in range(samples):
             conversation = [ { "role": "system", "content": systemprompt }, { "role": "user", "content": inputs[x] } ]
@@ -177,10 +179,11 @@ def main():
             print(f"\r>> Generated {x + 1}/{samples} conversations.", end="")
             data.append(conversation)
 
-    saveat = saveat + ".json"
-    with open(saveat, 'w') as f:
-        json.dump(data, f, indent=2)
-    print(f">> Done; saved through {saveat}")
+            # Write updated conversation to file after each sample
+            with open(saveat, 'w') as f:
+                json.dump(data, f, indent=2)
+
+    print(f"\n>> Done; saved through {saveat}")
 
 if __name__ == '__main__':
     main()
