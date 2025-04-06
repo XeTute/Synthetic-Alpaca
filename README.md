@@ -10,6 +10,7 @@ Example datasets generated using this repo:
 - [Hamzah-Asadullah/TA-4k](https://huggingface.co/datasets/Hamzah-Asadullah/TA-4k): TA (short for Tiny-Alpaca) 4k is a dataset with 4,096 rows, each with three columns, for instruction-tuning
 - [Hamzah-Asadullah/TypaRP-16x1k](https://huggingface.co/datasets/Hamzah-Asadullah/TypaRP-16x1k): 1k conversations, each conversation with the length of 16 messages, for roleplaying-specific usecases
 - [XeTute/TA-8k](https://huggingface.co/datasets/XeTute/TA-8k): The 8k version of TA: 8,192 rows, each with three columns, for instruction-tuning
+- [XeTute/TypaRP-12x1k](https://huggingface.co/datasets/XeTute/TypaRP-12x2k): The 2k version of TypaRP-16x1k, only 12 messages per conversation but each with much more detail, resulting in a more than six times larger dataset.
 
 If you also published one generated with this script and want it to appear here, just open a pull request ;)
 
